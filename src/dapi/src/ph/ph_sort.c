@@ -1,10 +1,10 @@
 /* 
  ***********************************************************************
  *
- *                           Copyright ©
- *	  Copyright © 2002 Fonix Corporation. All rights reserved.
- *	  Copyright © 2000-2001 Force Computers, Inc., a Solectron Company. All rights reserved.
- *    © Digital Equipment Corporation 1996, 1997. All rights reserved.
+ *                           Copyright ï¿½
+ *	  Copyright ï¿½ 2002 Fonix Corporation. All rights reserved.
+ *	  Copyright ï¿½ 2000-2001 Force Computers, Inc., a Solectron Company. All rights reserved.
+ *    ï¿½ Digital Equipment Corporation 1996, 1997. All rights reserved.
  *
  *    Restricted Rights: Use, duplication, or disclosure by the U.S.
  *    Government is subject to restrictions as set forth in subparagraph
@@ -630,137 +630,6 @@ if(pKsd_t->lang_curr == LANG_german)
 			pDph_t->symbols[n] = GRP_T;
 			insertphone (phTTS, (n+1), GRP_S);
 		}
-
-if(pKsd_t->lang_curr == LANG_spanish || LANG_ITALIAN)
-{
-		/* kludge we need to have a word boundary at the begiining to make things
-		coding more straight forward n=0 is becuase of no inital wbound.*/
-		if (pDph_t->symbols[n] == WBOUND || n==0)
-		{
-			/* allophonic rule for grapheme Y->e 
-			before an I as in Y india pronounced e india */
-			if((pDph_t->symbols[n+1] == SPP_I)
-				&& (pDph_t->symbols[n+2] == WBOUND))
-			{
-			/*then look ahead to see if the 
-			  next real phoneme is the vowel SPP_I*/
-				ntmp = n+2;
-			/* step past any non-phonemes such as stress*/
-				while ( ((pDph_t->symbols[tmp] & PVALUE) > 100 ||
-					(pDph_t->symbols[tmp] & PVALUE)==SPP_Q )
-					&& ntmp < pDph_t->nsymbtot)
-				{
-					ntmp++;
-				}
-				/* Is next thing a the vowel*/
-				if ((pDph_t->symbols[tmp] /*& PVALUE*/) == SPP_I)	
-				{
-					pDph_t->symbols[n+1]=SPP_E;
-				}
-			}
-			/* allophonic rule for "or" O->e
-			before an I as in Y india pronounced e india*/
-			if((pDph_t->symbols[n+2] == SPP_O)
-			 && (pDph_t->symbols[n+3] == WBOUND))
-			{
-			/* then look ahead to see if the next real phoneme is the vowel SPP_I*/
-				ntmp = n+3;
-			/* step past any non-phonemes such as stress */
-				while ( ((pDph_t->symbols[tmp] & PVALUE) > 100 ||
-					(pDph_t->symbols[tmp]) == SPP_Q )
-					&& ntmp < pDph_t->nsymbtot)
-				{
-					ntmp++;
-				}
-			    /* Is next thing SPP_O */
-				if ((pDph_t->symbols[tmp]) == SPP_O)		
-				{
-					pDph_t->symbols[n+2]=SPP_U;
-				}
-			}
-				
-			
-#ifdef BOOK_SAYS_DIFFERENT
-			// from previous input perhaps a castillion/latin difference or
-			// maybe anna was wrong/anglicanixzed
-		    /* 12/27/96 EAB insert a glotal stop bewteen s#s V#s and s#v and 
-			   Juan would like it with sonor #sonor  */
-			if(pDph_t->symbols[n-1] == SPP_S || pDph_t->symbols[n-1] == SPP_TH)
-			{
-				ntmp = n;
-				/* step past any non-phonemes such as stress */
-				while((pDph_t->symbols[ntmp] & PVALUE) > 100 && ntmp < pDph_t->nsymbtot)
-				{
-					ntmp++;
-				}
-				/* If next thing an S use sil instead of  a voiced
-				glotal stop*/
-				if((pDph_t->symbols[ntmp] ) == SPP_S || (pDph_t->symbols[ntmp] ) == SPP_TH)
-				{
-					insertphone(phTTS, n, GEN_SIL);
-					n=ntmp;
-				}
-
-				/* Is next thing a vowel*/
-				else if (phone_feature( pDph_t,  (pDph_t->symbols[tmp] & PVALUE)] & FVOWEL	)
-				{
-					if((pDph_t->wordclass[n] & 0x020))
-						insertphone (phTTS, n, SPP_Q);
-					/* BATS 677 Found another spot it was doing it wrong
-					EAB 5/18/98 */
-					if(!(pDph_t->wordclass[n-1] & 0x00800000)
-						&& !(pDph_t->wordclass[n+1] & 0x00800000))
-					{
-						insertphone (phTTS, n, SPP_Q);
-					/* 12/10/1996 EDB */
-					n=ntmp;
-					}
-				}
-			}
-				else if(phone_feature( pDph_t,  pDph_t->symbols[n-1]] & FSONOR)
-			{
-				ntmp = n;
-				/* step past any non-phonemes such as stress */
-				while ((pDph_t->symbols[tmp] & PVALUE) > 100 && ntmp < pDph_t->nsymbtot)
-				{
-					ntmp++;
-				}
-				/* Is next thing an s or a vowel i.e. vowel wbound vowel gets a glotal also 
-				BATS 677 EAB 5/18/98 */
-				if (phone_feature( pDph_t,  (pDph_t->symbols[tmp] & PVALUE)] & FSONOR
-					|| 	(pDph_t->symbols[tmp]) == SPP_S || (pDph_t->symbols[tmp]) == SPP_TH)
-				{
-					/*last phoneme of word equals next phoneme so glotal stop it*/
-					if(pDph_t->symbols[n-1]==(pDph_t->symbols[tmp] & PVALUE))
-					{
-						insertphone (phTTS, n, SPP_Q);
-					}
-			/* BATS 674 Should be inserting a glotal stop not silence eab 5/13/98*/
-			/* now trying to refine so that we don't put in tooo many glotal stops
-			but we must be careful because we can cause confusion eab 8/7/98 */
-					
-
-			/* BATS 677 Found another spot it was doing it wrong
-			EAB 5/18/98 EAB Found a behavior problem because N+1 can be end
-			marker with no silence at the end yet */
-
-					else if(n>0 && !(pDph_t->wordclass[n-1] & 0x00800000))
-					{
-						if((pDph_t->symbols[n+1]& PVALUE) != GEN_SIL  )
-							if( !((pDph_t->symbols[n+1]& PVALUE) >= 115
-								&& (pDph_t->symbols[n+1]& PVALUE) <= 118))
-							insertphone (phTTS, n, SPP_Q);
-
-					/* 12/10/1996 EDB */
-					}
-					n=ntmp;
-				}
-			}
-#endif // BOOK_SAYS_DIFFERENT
-							
-		}
-}
-
 		
 if(pKsd_t->lang_curr == LANG_latin_american)
 {
