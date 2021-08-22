@@ -1,2 +1,4 @@
 require('./mountfs')
-require('./build.js')
+require('./report')
+
+require('./build')
